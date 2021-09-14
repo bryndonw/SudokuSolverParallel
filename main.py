@@ -1,11 +1,10 @@
 from PuzzleImporter import PuzzleImporter
-from SimulatedAnnealing import FixedValues
+from SimulatedAnnealing import simulated_annealing
 def main():
     puzzle = PuzzleImporter('Data/Easy-P4.csv')
     array = puzzle.open()
 
-
-    PrintPuzzle(array)
+    PrintPuzzle(simulated_annealing(array))
 
 
 def PrintPuzzle(puzzle):
@@ -17,10 +16,10 @@ def PrintPuzzle(puzzle):
         for j in range(len(puzzle[i])):
             if j == 3 or j == 6:
                 line += "| "
-            line += str(puzzle[i,j])+" "
+            line += str(puzzle[i, j])+" "
         print(line)
 
 
 main()
-# Bryndon can push
+
 
