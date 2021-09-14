@@ -1,26 +1,17 @@
 from PuzzleImporter import PuzzleImporter
-from SimulatedAnnealing import FixedValues
+from GA import GA
 def main():
+    # Use a breakpoint in the code line below to debug your script.
     puzzle = PuzzleImporter('Data/Easy-P4.csv')
     array = puzzle.open()
+    GA(array)
 
 
-    PrintPuzzle(array)
 
-
-def PrintPuzzle(puzzle):
-    print("\n")
-    for i in range(len(puzzle)):
-        line = ""
-        if i == 3 or i == 6:
-            print("---------------------")
-        for j in range(len(puzzle[i])):
-            if j == 3 or j == 6:
-                line += "| "
-            line += str(puzzle[i,j])+" "
-        print(line)
-
-
-main()
 # Bryndon can push
 
+# Press the green button in the gutter to run the script.
+if __name__ == '__main__':
+    main()
+
+# See PyCharm help at https://www.jetbrains.com/help/pycharm/
