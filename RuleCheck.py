@@ -13,5 +13,4 @@ class RuleCheck():
                 else:
                     row.append(solution[i][j])
             full.append(row)
-        PuzzleImporter.PrintPuzzle(full)
         return full
