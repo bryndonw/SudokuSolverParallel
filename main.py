@@ -2,7 +2,7 @@ from PuzzleImporter import PuzzleImporter
 from GA import GA
 def main():
     # Use a breakpoint in the code line below to debug your script.
-    puzzle = PuzzleImporter('Data/Easy-P4.csv')
+    puzzle = PuzzleImporter('Data/Easy-P1.csv')
     array = puzzle.open()
     GA(array)
 
