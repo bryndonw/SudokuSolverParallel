@@ -11,7 +11,7 @@ class GA():
 
 
     def createPop(self, puzzle):
-        pop = 10         #TUNE
+        pop = 100         #TUNE
         population = []
         fitness = []
         for i in range(pop):
@@ -48,20 +48,24 @@ class GA():
         return columns*rows*boxes
 
     def evolve(self, population, fitness):
+        generations = 0
         while max(fitness) < 1:
             newpop = []
             newfitness = []
+            generations += 1
             while len(newpop) < len(population):    #generational replacement
                 parents = self.selection(population, fitness)
                 child = self.crossover(parents)
                 newchild = self.mutation(child)
-                fitness = self.calcfitness(self.puzzle, newchild)
+                childfitness = self.calcfitness(self.puzzle, newchild)
                 newpop.append(newchild)
-                newfitness.append(fitness)
+                newfitness.append(childfitness)
             population = newpop
             fitness = newfitness
-        print(self.puzzle)
-        print(population[fitness.index(max(fitness))])
+        PuzzleImporter.PrintPuzzle(self.puzzle)
+        PuzzleImporter.PrintPuzzle(population[fitness.index(max(fitness))])
+        PuzzleImporter.PrintPuzzle(RuleCheck.fullSolution(RuleCheck, self.puzzle, population[fitness.index(max(fitness))]))
+        print(generations)
 
     def selection(self, population, fitness):
         """Kieran Ringel
@@ -69,14 +73,12 @@ class GA():
         the loss list. The minimum loss in that list is then returned. The NN correlating to that loss is then
         added to the list of parents. Here 2 parents are used because that is what was discussed in class and
         it is what we are biologically familiar with."""
-        tournamentsize = 3  #TUNE
+        tournamentsize = 30  #TUNE
         parents = []
         for parent in range(2):     #gets 2 parents as we typically think of
-            print(parent)
-            print(fitness)
             tournament = random.sample(fitness, tournamentsize)  #selects random fitness that correlated to puzzle to fill tournament
-            selection = max(tournament)         #gets greatest fitness
-            parents.append(population[fitness.index(selection)]) #add the parent that correlated to that smallest error
+            maxfit = max(tournament)         #gets greatest fitness
+            parents.append(population[fitness.index(maxfit)]) #add the parent that correlated to that smallest error
         return(parents) #returns list of 2 parents
 
     def crossover(self, parents):
@@ -94,7 +96,7 @@ class GA():
         return child
 
     def mutation(self, child):
-        nummutations = 10       #TUNE
+        nummutations = 1       #TUNE
         for i in range(nummutations):
             num  = random.randint(0,80)
             row = num // 9

@@ -7,7 +7,7 @@ class RuleCheck():
         full = []
         for i in range(len(puzzle)):
             row = []
-            for j in range(len(puzzle[i])):
+            for j in range(len(puzzle[i ])):
                 if puzzle[i][j] != '?':
                     row.append(puzzle[i][j])
                 else:

@@ -1,22 +1,120 @@
-import sys
 import random
-import math
+from numpy import exp
+from numpy.random import rand
+
+n_iterations = 100000
+temp = 100
 
 
-def simulated_annealing(problem):
-    current = problem[0,0]
-    for t in range(sys.maxsize):
-        T = schedule(t)
-        if T == 0:
-            return current
-        neighbors = current
-        if not neighbors:
-            return current
-        next = random.choice(neighbors)
-        delta_e = problem.value(next.state) - problem.value(current.state)
-        if delta_e > 0 or (math.exp(delta_e / T)):
+def simulated_annealing(empty_puzzle, puzzle):
+    best = fitness(puzzle)
+    current = best
+    counter = 0
+
+    for i in range(n_iterations):
+        if best == 0:
+            break
+        if counter > 1000:
+            break
+        temp_puzzle = puzzle.copy()
+        random_swap(empty_puzzle, temp_puzzle)
+        next = fitness(temp_puzzle)
+
+        if next < best:
+            puzzle = temp_puzzle
+            #print('fitness has increased from {} to {}'.format(best, next))
+
+            best = next
+            counter += 1
+
+        diff = next - current
+
+        t = temp / float(i + 15)
+
+        value = exp(-diff / t)
+
+        if diff < 0 or rand() < value:
             current = next
 
+    return puzzle
 
-def schedule(k=20, lam = 0.005, limit = 100):
-    return lambda t: (k *math.exp(-lam * t) if t < limit else 0)
+
+def fill_puzzle(row, column, puzzle):
+    """Checks which numbers are missing in a 3x3 block"""
+    checklist = [False] * 9
+    for i in range(row, row + 3):
+        for j in range(column, column + 3):
+            if puzzle[i][j] != 0:
+                checklist[puzzle[i][j] - 1] = True
+
+    """Adds them to a list"""
+    addlist = []
+    for i in range(len(checklist)):
+        if not checklist[i]:
+            addlist.append(i + 1)
+
+    """Fill the 3x3 box without repeating any numbers"""
+    for i in range(len(addlist)):
+        breakcheck = False
+        index = random.randint(0, len(addlist) - 1)
+        for j in range(row, row + 3):
+            for k in range(column, column + 3):
+                if puzzle[j][k] == 0:
+                    number = addlist[index]
+                    puzzle[j][k] = number
+                    addlist.remove(number)
+                    breakcheck = True
+                    break
+
+            if breakcheck:
+                break
+
+
+def fitness(puzzle):
+    score = cost(puzzle) + cost(puzzle.transpose())
+
+    return score
+
+
+def cost(puzzle):
+    score = 0
+    for i in range(9):
+        checklist = [False] * 9
+        for j in range(9):
+            if not checklist[puzzle[i][j] - 1]:
+                checklist[puzzle[i][j] - 1] = True
+            else:
+                score += 1
+
+    return score
+
+
+def random_swap(empty_puzzle, puzzle):
+    x, y = random.randint(0, 2), random.randint(0, 2)
+
+    zero_counter = 0
+
+    for i in range(3 * x, 3 * x + 3):
+        for j in range(3 * y, 3 * y + 3):
+            if empty_puzzle[i][j] == 0:
+                zero_counter += 1
+
+    if zero_counter > 1:
+
+        sample1, sample2 = random.sample(range(1, zero_counter + 1), k=2)
+
+        i1, i2, j1, j2 = 0, 0, 0, 0
+
+        for i in range(3 * x, 3 * x + 3):
+            for j in range(3 * y, 3 * y + 3):
+                if empty_puzzle[i][j] == 0:
+                    sample1 -= 1
+                    sample2 -= 1
+                if sample1 == 0:
+                    i1, j1 = i, j
+                    sample1 -= 1
+                if sample2 == 0:
+                    i2, j2 = i, j
+                    sample2 -= 1
+
+        puzzle[i1][j1], puzzle[i2][j2] = puzzle[i2][j2], puzzle[i1][j1]
