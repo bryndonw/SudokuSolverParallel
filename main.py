@@ -1,25 +1,24 @@
 from PuzzleImporter import PuzzleImporter
 from GA import GA
-import numpy as np
-from SimulatedAnnealing import simulated_annealing, fill_puzzle
+from SimulatedAnnealing import simulated_annealing
 
 
 def main():
-    # Use a breakpoint in the code line below to debug your script.
+    """"Puzzle Selection"""
     puzzle = PuzzleImporter('Data/Easy-P2.csv')
     array = puzzle.open()
-    # GA(array)
 
+    """BackTracking Algorithm Run"""
+
+
+    """Genetic Algorithm Run"""
+    GA(array)
+
+    """"Simulated Annealing Algorithm Run"""
     empty_puzzle, puzzle = PuzzleImporter.puzzleFormating(array)
-    PuzzleImporter.PrintPuzzle(simulated_annealing(empty_puzzle,puzzle))
+    PuzzleImporter.PrintPuzzle(simulated_annealing(empty_puzzle, puzzle))
 
 
-
-
-# Bryndon can push
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
