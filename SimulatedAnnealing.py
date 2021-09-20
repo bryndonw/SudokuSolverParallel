@@ -2,11 +2,10 @@ import random
 from numpy import exp
 from numpy.random import rand
 
-
 """Intial Values to control temp and number of iterations before stoping the search"""
 temp = 100
 n_iterations = 100000
-
+step_counter = 0
 
 def simulated_annealing(empty_puzzle, puzzle):
     """Simulated annealing function that controls the temperature of the algorithim to influence moves within the
@@ -30,7 +29,8 @@ def simulated_annealing(empty_puzzle, puzzle):
         """Increments if function is stuck in local maxima"""
         if next <= best:
             puzzle = temp_puzzle
-            print('fitness has increased from {} to {}'.format(best, next))
+            """Fitness debug statement"""
+            # print('fitness has increased from {} to {}'.format(best, next))
 
             best = next
             counter += 1
@@ -45,6 +45,7 @@ def simulated_annealing(empty_puzzle, puzzle):
         if diff < 0 or rand() < value:
             current = next
 
+    print(step_counter)
     return puzzle
 
 
@@ -102,8 +103,9 @@ def cost(puzzle):
 
 def random_swap(empty_puzzle, puzzle):
     """Selects two ints from the puzzle and swaps them"""
-    x, y = random.randint(0, 2), random.randint(0, 2)
 
+
+    x, y = random.randint(0, 2), random.randint(0, 2)
     zero_counter = 0
 
     for i in range(3 * x, 3 * x + 3):
@@ -114,6 +116,9 @@ def random_swap(empty_puzzle, puzzle):
     if zero_counter > 1:
 
         sample1, sample2 = random.sample(range(1, zero_counter + 1), k=2)
+
+        global step_counter
+        step_counter += 1
 
         i1, i2, j1, j2 = 0, 0, 0, 0
 
@@ -130,3 +135,5 @@ def random_swap(empty_puzzle, puzzle):
                     sample2 -= 1
 
         puzzle[i1][j1], puzzle[i2][j2] = puzzle[i2][j2], puzzle[i1][j1]
+
+
