@@ -2,34 +2,43 @@ import random
 from numpy import exp
 from numpy.random import rand
 
-n_iterations = 100000
+
+"""Intial Values to control temp and number of iterations before stoping the search"""
 temp = 100
+n_iterations = 100000
 
 
 def simulated_annealing(empty_puzzle, puzzle):
+    """Simulated annealing function that controls the temperature of the algorithim to influence moves within the
+    solve """
     best = fitness(puzzle)
     current = best
     counter = 0
 
+    """Reheat function, counts iterations if the solution is stuck in local maxima"""
     for i in range(n_iterations):
         if best == 0:
             break
-        if counter > 1000:
+        if counter > 500:
             break
+
+        """Performs random swap and fitness test on puzzle to determine improvements"""
         temp_puzzle = puzzle.copy()
         random_swap(empty_puzzle, temp_puzzle)
         next = fitness(temp_puzzle)
 
-        if next < best:
+        """Increments if function is stuck in local maxima"""
+        if next <= best:
             puzzle = temp_puzzle
-            #print('fitness has increased from {} to {}'.format(best, next))
+            print('fitness has increased from {} to {}'.format(best, next))
 
             best = next
             counter += 1
 
+        """Temperature function"""
         diff = next - current
 
-        t = temp / float(i + 15)
+        t = temp / float(i + 1)
 
         value = exp(-diff / t)
 
