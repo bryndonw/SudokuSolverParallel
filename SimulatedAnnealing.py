@@ -2,14 +2,14 @@ import random
 from numpy import exp
 from numpy.random import rand
 
-"""Initial Values to control temp and number of iterations before stoping the search"""
+"""Initial Values to control temp and number of iterations before stopping the search"""
 temp = 100
 n_iterations = 100000
 step_counter = 0
 
 
 def simulated_annealing(empty_puzzle, puzzle):
-    """Simulated annealing function that controls the temperature of the algorithim to influence moves within the
+    """Simulated annealing function that controls the temperature of the algorithm to influence moves within the
     solve """
     best = fitness(puzzle)
     current = best
