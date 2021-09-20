@@ -24,7 +24,7 @@ class PuzzleImporter():
                 line += str(puzzle[i][j]) + " "
             print(line)
 
-    def puzzleFormating(array):
+    def puzzle_formating(array):
         for i in range(0, 9):
             for j in range(0, 9):
                 if array[i, j] == '?':
