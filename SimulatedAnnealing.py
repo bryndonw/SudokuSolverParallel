@@ -71,12 +71,14 @@ def fill_puzzle(row, column, puzzle):
 
 
 def fitness(puzzle):
+    """Scores the puzzle based upon its current state and the next state using the cost function"""
     score = cost(puzzle) + cost(puzzle.transpose())
 
     return score
 
 
 def cost(puzzle):
+    """Calculate the total cost of the puzzle by checking the values"""
     score = 0
     for i in range(9):
         checklist = [False] * 9
@@ -90,6 +92,7 @@ def cost(puzzle):
 
 
 def random_swap(empty_puzzle, puzzle):
+    """Selects two ints from the puzzle and swaps them"""
     x, y = random.randint(0, 2), random.randint(0, 2)
 
     zero_counter = 0
