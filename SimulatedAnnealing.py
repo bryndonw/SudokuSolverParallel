@@ -46,6 +46,10 @@ def simulated_annealing(empty_puzzle, puzzle):
             current = next
 
     print(step_counter, " steps")
+
+    if fitness(puzzle) != 0:
+        print("Unable to find solution in ", n_iterations, " iterations")
+
     return puzzle
 
 
