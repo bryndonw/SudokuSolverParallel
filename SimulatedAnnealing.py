@@ -45,7 +45,7 @@ def simulated_annealing(empty_puzzle, puzzle):
         if diff < 0 or rand() < value:
             current = next
 
-    print(step_counter)
+    print(step_counter, " steps")
     return puzzle
 
 
