@@ -1,0 +1,3 @@
+Kieran Ringel - GA, RuleCheck, PuzzleImporter
+Bryndon Wilkerson - Backtracking
+Mason Medina - Simulated Annealing, PuzzleImporter
