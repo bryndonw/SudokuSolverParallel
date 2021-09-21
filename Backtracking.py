@@ -1,7 +1,6 @@
 import numpy as np
 from PuzzleImporter import PuzzleImporter
 from RuleCheck import RuleCheck
-import random
 
 class Backtracking:
 
@@ -39,7 +38,7 @@ class Backtracking:
         full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
         new_var = self.select_unassigned_variable(full, search_type)
 
-        list_of_potential_values = self.order_domain_values(search_type, full)
+        list_of_potential_values = self.order_domain_values()
 
         for p in range(9):
             if self.check_rules(full, new_var[0], new_var[1], list_of_potential_values[p]):
@@ -53,9 +52,11 @@ class Backtracking:
 
         return False
 
-
-    # search_type determines heuristic to select variable
     def select_unassigned_variable(self, full, search_type):
+        """
+        Depending on the search_type, this will return an unassigned variable
+        """
+        # Static heuristic - returns the next unassigned variable
         if search_type == 0:
             empty_var = []
             for i in range(len(full)):
@@ -77,21 +78,20 @@ class Backtracking:
                         return empty_var
 
 
-    # Returns an ordered list of values to try
     @staticmethod
-    def order_domain_values(search_type, full):
-        if search_type == 0:
-            list_potential = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-        elif search_type == 1:
-            list_potential = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-            random.shuffle(list_potential)
-        else:
-            list_potential = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+    def order_domain_values():
+        """
+        Returns an ordered list of values to try
+        """
+        list_potential = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
         return list_potential
 
     def minimum_remaining_values(self, full):
+        """
+        Calculates the domain on every unassigned variable
+        Returns the variable with the least amount of values that can be assigned to it
+        """
         all_vars = []
-        ordered_vars = []
 
         domain = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
         for i in range(9):
@@ -102,20 +102,23 @@ class Backtracking:
                         if self.check_rules(full, i, j, domain[p]):
                             count += 1
                     all_vars.append([i, j, count])
+
+        #
         for j in range(9):
             for i in range(len(all_vars)):
                 if all_vars[i][2] == j:
-                    ordered_vars.append(all_vars[i])
-        return ordered_vars.pop(0)
+                    return all_vars[i]
+        return
 
-
-    # If search_type is
-    #   1, it returns True because we are using simple backtracking
-    #   2, it calls forward checking
-    #   3, it calls arc-consistency
     def inference(self, puzzle, assignment, xi, xj, search_type):
+        """"
+        Depending on search_type, this will take the current puzzle and decide whether to continue down this path
+        """
+        # Simple backtracking - returns true as we do not infer any more
         if search_type == 0:
             return True
+        # Forward checking - returns true if the current assignment
+        # doesn't cause any variable to have a domain size of 0
         elif search_type == 1:
             for p in range(9):
                 for k in range(9):
@@ -124,11 +127,17 @@ class Backtracking:
                         if not result:
                             return result
             return True
+        # Arc consistency - returns true if with the current assignment
+        # every arc still has a domain size greater than 0
         else:
             return self.arc_consistency(puzzle, assignment)
 
     # Takes an unassigned variable and adds it and every other unassigned variable to a queue
     def find_vars_for_queue(self, puzzle, assignment, variable):
+        """
+        Creates arcs between this variable and every other unassigned variable in the puzzle
+        Returns a queue of arcs for the current variable
+        """
         full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
         queue = []
         pair = []
@@ -147,6 +156,9 @@ class Backtracking:
     # Takes in the current variable and finds the next unassigned variable
     # Returns a queue of all of the variable pairs
     def next_empty_var(self, puzzle, assignment, variable):
+        """
+        Takes in the current empty variable and returns the next unassigned variable
+        """
         full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
         valid = False
         while not valid:
@@ -162,6 +174,9 @@ class Backtracking:
 
     # Creates a queue of all of the arcs in the puzzle
     def create_queue(self, puzzle, assignment):
+        """
+        Returns a queue of all of the arcs in the puzzle/assignment
+        """
         full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
         variable = self.select_unassigned_variable(full, 0)
         queue = []
@@ -176,8 +191,13 @@ class Backtracking:
                 reform_queue.append(elem)
         return reform_queue
 
-    #
+
     def arc_consistency(self, puzzle, assignment):
+        """
+        Pops off the variable in queue and checks to make sure that it is arc-consistent
+        Returns True if each variable is arc consistent with one another and
+        False if an arc between 2 unassigned variables do not exist
+        """
         full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
 
         queue = self.create_queue(puzzle, assignment)
@@ -191,6 +211,11 @@ class Backtracking:
     # to make sure there exists at least one value that is viable for current puzzle
     # If the two variables are not arc-consistent, returns false
     def check_domain(self, full, variable):
+        """
+        Checks the domains of each variable pair
+        Makes sure there exists at least one value in the domain for the pair of variables
+        If there isn't, the variables are not arc-consistent and it returns false
+        """
         list_potential1 = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
         list_potential2 = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
         actual_list1 = []
@@ -212,6 +237,9 @@ class Backtracking:
 
     # Returns true if the new variable can be added without violating any constraints
     def check_rules(self, full, i, j, new_val):
+        """
+        Returns true if the new variable can be added without violating any constraints
+        """
         if self.col_check(full, j, new_val) and self.row_check(full, i, new_val) and self.square_check(full, i, j, new_val):
             return True
         else:
@@ -220,6 +248,10 @@ class Backtracking:
     # checks to make sure every variable has the potential to be assigned
     # If not, returns False
     def forward_checking(self, puzzle, assignment, i, j):
+        """
+        Checks to make sure every next possible variable has a domain
+        If not, return false
+        """
         full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
         list_potential = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
         actual_list = []
@@ -230,25 +262,32 @@ class Backtracking:
             return False
         return True
 
-    # Returns true if the new variable doesn't violate the column constraint
+
     @staticmethod
     def col_check(full, j, new_val):
+        """ Returns true if the new variable doesn't violate the column constraint """
         for i in range(9):
             if full[i][j] == new_val:
                 return False
         return True
 
-    # Returns true if the new variable doesn't violate the row constraint
+
     @staticmethod
     def row_check(full, i, new_val):
+        """"
+        Returns true if the new variable doesn't violate the row constraint
+        """
         for j in range(9):
             if full[i][j] == new_val:
                 return False
         return True
 
-    # Returns true if the new variable doesn't violate the 3x3 constraint
+
     @staticmethod
     def square_check(full, i, j, new_val):
+        """
+        Returns true if the new variable doesn't violate the 3x3 constraint
+        """
         start_row = i - i % 3
         start_col = j - j % 3
 
