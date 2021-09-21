@@ -1,10 +1,18 @@
 import numpy as np
 from PuzzleImporter import PuzzleImporter
 from RuleCheck import RuleCheck
+import random
 
 class Backtracking:
 
     def __init__(self, puzzle, search_type):
+        """ Bryndon Wilkerson
+        We create an assignment array based on the problem provided.
+        In assignment, a 0 indicates a constraint in puzzle and ? indicates an unassigned variable
+        We call backtrack with our constraints and our unassigned variables
+        If there's a solution, we print the number of steps it took
+        If there isn't a solution, we print "Cannot Solve"
+        """
         self.count = 0
         assignment = np.copy(puzzle)
         for i in range(len(puzzle)):
@@ -17,10 +25,13 @@ class Backtracking:
         else:
             print("Cannot solve")
 
-    # Tests puzzle to see if it has any more unassigned spaces
-    # Returns True if the puzzle is incomplete
+
     @staticmethod
     def incomplete_puzzle(puzzle, assignment):
+        """ Bryndon Wilkerson
+        Tests puzzle to see if it has any more unassigned spaces
+        Returns True if the puzzle is incomplete
+        """
         full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
         for i in range(len(full)):
             for j in range(len(full[i])):
@@ -29,33 +40,47 @@ class Backtracking:
         return False
 
     def backtrack(self, puzzle, assignment, search_type):
-        self.count += 1
+        """Bryndon Wilkerson
+        This recursive method takes in a set of constraints (puzzle) and our assigned variables (assignment)
+        and a search type
+        It iteratively checks every unassigned variable in puzzle and assigns a value to it
+        If this new value fails to meet constraints, it backtracks
+        Inference is where we take the search type and look further into the newly assigned variable
+        and its repercussions on the rest of the unassigned variables
+        """
+        # If the puzzle and assignment are completed, return True
         if not self.incomplete_puzzle(puzzle, assignment):
-            full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
-            PuzzleImporter.PrintPuzzle(full)
             return True
 
         full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
+        # We select a new variable and the heuristics depends on the search type
         new_var = self.select_unassigned_variable(full, search_type)
-
+        # We generate a list of the potential values
         list_of_potential_values = self.order_domain_values()
 
-        for p in range(9):
+        for p in range(len(list_of_potential_values)):
             if self.check_rules(full, new_var[0], new_var[1], list_of_potential_values[p]):
+                # If the new value fits within the constraints, we add it to assignment
                 assignment[new_var[0]][new_var[1]] = list_of_potential_values[p]
+                # Since we added to assignment, we increment our count by 1
+                self.count += 1
+
+                # We send in the puzzle and the new assignment
+                # and use the search_type to make an inference on whether we continue on this path
                 inferences = self.inference(puzzle, assignment, new_var[0], new_var[1], search_type)
                 if inferences:
                     result = self.backtrack(puzzle, assignment, search_type)
                     if result:
                         return result
+                # If our inferences return false, we remove the value from assignment and try a new one
                 assignment[new_var[0]][new_var[1]] = '?'
-
         return False
 
     def select_unassigned_variable(self, full, search_type):
-        """
+        """ Bryndon Wilkerson
         Depending on the search_type, this will return an unassigned variable
         """
+
         # Static heuristic - returns the next unassigned variable
         if search_type == 0:
             empty_var = []
@@ -65,29 +90,30 @@ class Backtracking:
                         empty_var.append(i)
                         empty_var.append(j)
                         return empty_var
-        elif search_type == 1:
-            return self.minimum_remaining_values(full)
-        else:
-            # TODO: add heuristic here
-            empty_var = []
-            for i in range(len(full)):
-                for j in range(len(full[i])):
-                    if full[i][j] == '?':
-                        empty_var.append(i)
-                        empty_var.append(j)
-                        return empty_var
 
+        # Random heuristic - returns a random unassigned variable
+        elif search_type == 1:
+            var_list = []
+            for i in range(9):
+                for j in range(9):
+                    if full[i][j] == '?':
+                        var_list.append([i, j])
+            return random.choice(var_list)
+
+        # minimum remaining values - returns a variable that has the smallest domain of values
+        else:
+            return self.minimum_remaining_values(full)
 
     @staticmethod
     def order_domain_values():
-        """
+        """ Bryndon Wilkerson
         Returns an ordered list of values to try
         """
         list_potential = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
         return list_potential
 
     def minimum_remaining_values(self, full):
-        """
+        """ Bryndon Wilkerson
         Calculates the domain on every unassigned variable
         Returns the variable with the least amount of values that can be assigned to it
         """
@@ -111,7 +137,7 @@ class Backtracking:
         return
 
     def inference(self, puzzle, assignment, xi, xj, search_type):
-        """"
+        """" Bryndon Wilkerson
         Depending on search_type, this will take the current puzzle and decide whether to continue down this path
         """
         # Simple backtracking - returns true as we do not infer any more
@@ -134,7 +160,7 @@ class Backtracking:
 
     # Takes an unassigned variable and adds it and every other unassigned variable to a queue
     def find_vars_for_queue(self, puzzle, assignment, variable):
-        """
+        """ Bryndon Wilkerson
         Creates arcs between this variable and every other unassigned variable in the puzzle
         Returns a queue of arcs for the current variable
         """
@@ -156,7 +182,7 @@ class Backtracking:
     # Takes in the current variable and finds the next unassigned variable
     # Returns a queue of all of the variable pairs
     def next_empty_var(self, puzzle, assignment, variable):
-        """
+        """ Bryndon Wilkerson
         Takes in the current empty variable and returns the next unassigned variable
         """
         full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
@@ -174,7 +200,7 @@ class Backtracking:
 
     # Creates a queue of all of the arcs in the puzzle
     def create_queue(self, puzzle, assignment):
-        """
+        """ Bryndon Wilkerson
         Returns a queue of all of the arcs in the puzzle/assignment
         """
         full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
@@ -193,7 +219,7 @@ class Backtracking:
 
 
     def arc_consistency(self, puzzle, assignment):
-        """
+        """ Bryndon Wilkerson
         Pops off the variable in queue and checks to make sure that it is arc-consistent
         Returns True if each variable is arc consistent with one another and
         False if an arc between 2 unassigned variables do not exist
@@ -211,7 +237,7 @@ class Backtracking:
     # to make sure there exists at least one value that is viable for current puzzle
     # If the two variables are not arc-consistent, returns false
     def check_domain(self, full, variable):
-        """
+        """ Bryndon Wilkerson
         Checks the domains of each variable pair
         Makes sure there exists at least one value in the domain for the pair of variables
         If there isn't, the variables are not arc-consistent and it returns false
@@ -237,7 +263,7 @@ class Backtracking:
 
     # Returns true if the new variable can be added without violating any constraints
     def check_rules(self, full, i, j, new_val):
-        """
+        """ Bryndon Wilkerson
         Returns true if the new variable can be added without violating any constraints
         """
         if self.col_check(full, j, new_val) and self.row_check(full, i, new_val) and self.square_check(full, i, j, new_val):
@@ -248,7 +274,7 @@ class Backtracking:
     # checks to make sure every variable has the potential to be assigned
     # If not, returns False
     def forward_checking(self, puzzle, assignment, i, j):
-        """
+        """ Bryndon Wilkerson
         Checks to make sure every next possible variable has a domain
         If not, return false
         """
@@ -265,7 +291,9 @@ class Backtracking:
 
     @staticmethod
     def col_check(full, j, new_val):
-        """ Returns true if the new variable doesn't violate the column constraint """
+        """ Bryndon Wilkerson
+        Returns true if the new variable doesn't violate the column constraint
+        """
         for i in range(9):
             if full[i][j] == new_val:
                 return False
@@ -274,7 +302,7 @@ class Backtracking:
 
     @staticmethod
     def row_check(full, i, new_val):
-        """"
+        """" Bryndon Wilkerson
         Returns true if the new variable doesn't violate the row constraint
         """
         for j in range(9):
@@ -285,7 +313,7 @@ class Backtracking:
 
     @staticmethod
     def square_check(full, i, j, new_val):
-        """
+        """ Bryndon Wilkerson
         Returns true if the new variable doesn't violate the 3x3 constraint
         """
         start_row = i - i % 3
