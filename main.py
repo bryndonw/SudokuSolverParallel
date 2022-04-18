@@ -5,13 +5,18 @@ from SimulatedAnnealing import simulated_annealing
 
 def main():
     """"Puzzle Selection"""
-    puzzle = PuzzleImporter('Data/Med-P1.csv')
+
+    puzzle = PuzzleImporter('Data/Med-P2.csv')
     array = puzzle.open()
 
     """BackTracking Algorithm Run"""
-    Backtracking(array, 0)  #simple
-    Backtracking(array, 1)  #forward checking
-    Backtracking(array, 2)  #arc consistency
+    # print("Simple backtracking with static heuristics: ")
+    # Backtracking(array, 0)
+    # print("Backtracking with forward checking and random heuristics: ")
+    # Backtracking(array, 1)
+    print("Backtracking with arc-consistency and minimum remaining value heuristics: ")
+    Backtracking(array, 2)
+
 
 
     """Genetic Algorithm Run"""
