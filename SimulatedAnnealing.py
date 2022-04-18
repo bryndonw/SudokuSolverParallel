@@ -9,7 +9,8 @@ step_counter = 0
 
 
 def simulated_annealing(empty_puzzle, puzzle):
-    """Simulated annealing function that controls the temperature of the algorithm to influence moves within the
+    """ Mason Medina
+    Simulated annealing function that controls the temperature of the algorithm to influence moves within the
     solve """
     best = fitness(puzzle)
     current = best
@@ -31,7 +32,7 @@ def simulated_annealing(empty_puzzle, puzzle):
         if next <= best:
             puzzle = temp_puzzle
             """Fitness debug statement"""
-            #print('fitness has increased from {} to {}'.format(best, next))
+            # print('fitness has increased from {} to {}'.format(best, next))
 
             best = next
             counter += 1
@@ -55,23 +56,24 @@ def simulated_annealing(empty_puzzle, puzzle):
 
 
 def fill_puzzle(row, column, puzzle):
-    """Checks which numbers are missing in a 3x3 block"""
+    """ Mason Medina
+    Checks which numbers are missing in a 3x3 block"""
     checklist = [False] * 9
-    for i in range(row, row + 3):
-        for j in range(column, column + 3):
-            if puzzle[i][j] != 0:
+    for i in range(row, row + 3):  # Iterates through the rows
+        for j in range(column, column + 3):  # Iterates through columns
+            if puzzle[i][j] != 0:  # Checks for zeros
                 checklist[puzzle[i][j] - 1] = True
 
     """Adds them to a list"""
     addlist = []
     for i in range(len(checklist)):
         if not checklist[i]:
-            addlist.append(i + 1)
+            addlist.append(i + 1)  # Adds set variables to the list
 
     """Fill the 3x3 box without repeating any numbers"""
     for i in range(len(addlist)):
         breakcheck = False
-        index = random.randint(0, len(addlist) - 1)
+        index = random.randint(0, len(addlist) - 1)  # picks a random int from 1-9 that isnt already in the box
         for j in range(row, row + 3):
             for k in range(column, column + 3):
                 if puzzle[j][k] == 0:
@@ -86,14 +88,16 @@ def fill_puzzle(row, column, puzzle):
 
 
 def fitness(puzzle):
-    """Scores the puzzle based upon its current state and the next state using the cost function"""
+    """ Mason Medina
+    Scores the puzzle based upon its current state and the next state using the cost function"""
     score = cost(puzzle) + cost(puzzle.transpose())
 
     return score
 
 
 def cost(puzzle):
-    """Calculate the total cost of the puzzle by checking the values"""
+    """ Mason Medina
+    Calculate the total cost of the puzzle by checking the values"""
     score = 0
     for i in range(9):
         checklist = [False] * 9
@@ -107,7 +111,8 @@ def cost(puzzle):
 
 
 def random_swap(empty_puzzle, puzzle):
-    """Selects two ints from the puzzle and swaps them"""
+    """ Mason Medina
+    Selects two ints from the puzzle and swaps them"""
 
     x, y = random.randint(0, 2), random.randint(0, 2)
     zero_counter = 0
@@ -119,7 +124,7 @@ def random_swap(empty_puzzle, puzzle):
 
     if zero_counter > 1:
 
-        sample1, sample2 = random.sample(range(1, zero_counter + 1), k=2)
+        sample1, sample2 = random.sample(range(1, zero_counter + 1), k=2) #Radomly selects 2 samples to swap within a box
 
         global step_counter
         step_counter += 1

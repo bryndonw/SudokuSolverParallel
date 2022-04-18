@@ -56,6 +56,7 @@ class GA():
     def evolve(self, population, fitness):
         """Kieran Ringel
         While there is not a solution continue to create new generations through selection, crossover and mutation"""
+        PuzzleImporter.PrintPuzzle(self.puzzle)
         generations = 0
         while (max(fitness) < 1) and (generations < 100000): #while there is not a solution
             newpop = []
@@ -70,7 +71,7 @@ class GA():
                 newfitness.append(childfitness)     #add corresponding fitness to population
             population = newpop     #generational replacement
             fitness = newfitness
-        PuzzleImporter.PrintPuzzle(self.puzzle)
+
         PuzzleImporter.PrintPuzzle(population[fitness.index(max(fitness))])
         PuzzleImporter.PrintPuzzle(RuleCheck.fullSolution(RuleCheck, self.puzzle, population[fitness.index(max(fitness))]))
         print(generations)
