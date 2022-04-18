@@ -19,7 +19,7 @@ class Backtracking:
             for j in range(len(puzzle[i])):
                 if puzzle[i][j] != '?':
                     assignment[i][j] = '0'
-
+        PuzzleImporter.PrintPuzzle(puzzle)
         if self.backtrack(puzzle, assignment, search_type):
             print(self.count)
         else:
@@ -50,16 +50,24 @@ class Backtracking:
         """
         # If the puzzle and assignment are completed, return True
         if not self.incomplete_puzzle(puzzle, assignment):
+            full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
+            PuzzleImporter.PrintPuzzle(full)
             return True
+
+        if self.count > 15000:
+            return False
 
         full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
         # We select a new variable and the heuristics depends on the search type
         new_var = self.select_unassigned_variable(full, search_type)
+        # print("Variable: ", new_var)
+
         # We generate a list of the potential values
         list_of_potential_values = self.order_domain_values()
 
         for p in range(len(list_of_potential_values)):
             if self.check_rules(full, new_var[0], new_var[1], list_of_potential_values[p]):
+                # print("Value added: ", list_of_potential_values[p])
                 # If the new value fits within the constraints, we add it to assignment
                 assignment[new_var[0]][new_var[1]] = list_of_potential_values[p]
                 # Since we added to assignment, we increment our count by 1
@@ -67,13 +75,15 @@ class Backtracking:
 
                 # We send in the puzzle and the new assignment
                 # and use the search_type to make an inference on whether we continue on this path
-                inferences = self.inference(puzzle, assignment, new_var[0], new_var[1], search_type)
+                inferences = self.inference(puzzle, assignment, search_type)
                 if inferences:
                     result = self.backtrack(puzzle, assignment, search_type)
                     if result:
                         return result
                 # If our inferences return false, we remove the value from assignment and try a new one
                 assignment[new_var[0]][new_var[1]] = '?'
+                print("Backtrack")
+
         return False
 
     def select_unassigned_variable(self, full, search_type):
@@ -128,15 +138,14 @@ class Backtracking:
                         if self.check_rules(full, i, j, domain[p]):
                             count += 1
                     all_vars.append([i, j, count])
-
-        #
         for j in range(9):
             for i in range(len(all_vars)):
                 if all_vars[i][2] == j:
+                    # print("Number of remaining values in domain:", all_vars[i][2])
                     return all_vars[i]
         return
 
-    def inference(self, puzzle, assignment, xi, xj, search_type):
+    def inference(self, puzzle, assignment, search_type):
         """" Bryndon Wilkerson
         Depending on search_type, this will take the current puzzle and decide whether to continue down this path
         """
@@ -227,9 +236,11 @@ class Backtracking:
         full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
 
         queue = self.create_queue(puzzle, assignment)
+        # print(queue)
         while len(queue) > 0:
             variable = queue.pop(0)
             if not self.check_domain(full, variable):
+                # print("Domain did not check out")
                 return False
         return True
 
@@ -285,6 +296,7 @@ class Backtracking:
             if self.check_rules(full, i, j, list_potential[r]):
                 actual_list.append(list_potential[r])
         if len(actual_list) == 0:
+            # print("Empty List")
             return False
         return True
 
