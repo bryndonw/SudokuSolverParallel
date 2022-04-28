@@ -7,7 +7,7 @@ from SimulatedAnnealing import simulated_annealing
 
 def main():
     """"Puzzle Selection"""
-    puzzle = PuzzleImporter('Data/Med-P2.csv')
+    puzzle = PuzzleImporter('Data/Evil-P2.csv')
     array = puzzle.open()
 
     """BackTracking Algorithm Run"""

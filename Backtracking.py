@@ -1,5 +1,6 @@
 import numpy as np
 from PuzzleImporter import PuzzleImporter
+from multiprocessing import Pool
 from RuleCheck import RuleCheck
 import random
 
