@@ -1,3 +1,4 @@
+import sys
 import time
 
 import Backtracking as bt
@@ -57,6 +58,4 @@ class ThreadBacktrack:
         if something is True:
             self.movin=False
             print('finished')
-            quit()
-
 

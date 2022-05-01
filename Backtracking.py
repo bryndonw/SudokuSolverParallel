@@ -55,7 +55,7 @@ class Backtracking:
         if not self.incomplete_puzzle(puzzle, assignment):
             full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
             PuzzleImporter.PrintPuzzle(full)
-            return True
+            return full
 
 
         full = RuleCheck.fullSolution(RuleCheck, puzzle, assignment)
