@@ -1,31 +1,49 @@
-from Backtracking import Backtracking
 from PuzzleImporter import PuzzleImporter
 from ThreadBacktrack import ThreadBacktrack
-from GA import GA
-from SimulatedAnnealing import simulated_annealing
+from NormalBacktrack import NormalBacktrack
+import time
 
 
 def main():
+    begin = 'Data/'
+    levels = ['Easy-P', 'Hard-P', 'Med-P', 'Evil-P']
+    numbers = ['1', '2', '3', '4', '5']
+    end = '.csv'
+    puzzleNames = []
+    for l in levels:
+        for num in numbers:
+            name = begin + l + num + end
+            puzzleNames.append(name)
+
+    # print(puzzleNames)
+    aveTimeVal = 0
+    aveTimeVar = 0
+    aveTimeNorm = 0
+    count = 0
+    difficulty_level = 0
     """"Puzzle Selection"""
-    puzzle = PuzzleImporter('Data/Easy-P2.csv')
-    array = puzzle.open()
+    for p in puzzleNames:
+        puzzle = PuzzleImporter(p)
+        array = puzzle.open()
 
-    """BackTracking Algorithm Run"""
-    # print("Simple backtracking with static heuristics: ")
-    # Backtracking(array, 0)
-    # print("Backtracking with forward checking and random heuristics: ")
-    # Backtracking(array, 1)
-    print("Backtracking with arc-consistency and minimum remaining value heuristics: ")
-    ThreadBacktrack(array)
-    # Backtracking(array, 2)
+        varTime, valTime = ThreadBacktrack(array).ThreadStart()
 
+        t = time.time()
+        NormalBacktrack(array, 0)
 
-    """Genetic Algorithm Run"""
-    #GA(array)
-
-    """"Simulated Annealing Algorithm Run"""
-  #  empty_puzzle, puzzle = PuzzleImporter.puzzleFormating(array)
-   # PuzzleImporter.PrintPuzzle(simulated_annealing(empty_puzzle, puzzle))
+        t2 = time.time() - t
+        # print("Time it took with no parallelization", t2)
+        aveTimeVal += valTime
+        aveTimeVar += varTime
+        aveTimeNorm += t2
+        count += 1
+        if count == 5:
+            print("\n\nAverage Time for " + levels[difficulty_level] + " Puzzles")
+            print("Value Time: ", aveTimeVal/5)
+            print("Variable Time: ", aveTimeVar/5)
+            print("Normal Time: ", aveTimeNorm/5)
+            difficulty_level += 1
+            count = 0
 
 
 if __name__ == '__main__':
